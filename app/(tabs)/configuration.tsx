@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   StyleSheet,
   Text,
@@ -7,54 +7,30 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-} from 'react-native'
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 
-export default function Home ()  {
+export default function Configuration ()  {
   
-  const [amount, setAmount] = useState("")
   const [percent, setPercent] = useState("")
 
-  const showAlert = (viewId: string)  => { Alert.alert('Calculadora', 'Button pressed ' + viewId); }
-  const getData = async () => {
+  const showAlert = (viewId: string)  => { 
+    Alert.alert('Calculadora', 'Se ha guardado el porcentaje ' + viewId); 
+    storeData(percent);
+  }
+
+  const storeData = async (value: any) => {
     try {
-      const value = await AsyncStorage.getItem('porcentaje');
-      if (value != null) {
-        setPercent(value);
-      }
-      else {
-        setPercent('15')
-      }
+      await AsyncStorage.setItem('porcentaje', value);
     } catch (e) {
-      // error reading value
+      // saving error
     }
   };
 
-  useEffect(() => {
-    getData();
-  }), [];
-
-  useFocusEffect(
-    React.useCallback(() => {
-      getData();
-    }, [])
-  );
-
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Calculadora de propinas</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Monto"
-          keyboardType="numeric"
-          underlineColorAndroid="transparent"
-          onChangeText={setAmount}
-          value={amount}
-        />
-      </View>
-
+      <Text style={styles.header}>Configuración</Text>
+     
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.inputs}
@@ -62,13 +38,15 @@ export default function Home ()  {
           underlineColorAndroid="transparent"
           onChangeText={setPercent}
           value={percent}
+          keyboardType='numeric'
+          returnKeyType='done'
         />
       </View>
 
       <TouchableOpacity
         style={[styles.buttonContainer, styles.calcularButton]}
-        onPress={() => showAlert('calcular')}>
-        <Text style={styles.loginText}>Calcular</Text>
+        onPress={() => showAlert('')}>
+        <Text style={styles.loginText}>Guardar</Text>
       </TouchableOpacity>
 
      
